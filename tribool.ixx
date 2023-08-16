@@ -49,15 +49,15 @@ export namespace kuma
 		{}
 
 	private:
-		friend constexpr tribool operator!(tribool t)noexcept;
-		friend constexpr tribool operator&&(tribool tl, tribool tr)noexcept;
-		friend constexpr tribool operator||(tribool tl, tribool tr)noexcept;
-		friend constexpr tribool operator==(tribool tl, tribool tr)noexcept;
-		friend constexpr tribool operator!=(tribool tl, tribool tr)noexcept;
-		friend constexpr bool isUnknown(tribool t)noexcept;
-		friend constexpr bool isTrue(tribool t)noexcept;
-		friend constexpr bool isFalse(tribool t)noexcept;
-		friend constexpr bool isMeaningless(tribool t)noexcept;
+		friend constexpr tribool operator!(tribool)noexcept;
+		friend constexpr tribool operator&&(tribool, tribool)noexcept;
+		friend constexpr tribool operator||(tribool, tribool)noexcept;
+		friend constexpr tribool operator==(tribool, tribool)noexcept;
+		friend constexpr tribool operator!=(tribool, tribool)noexcept;
+		friend constexpr bool isUnknown(tribool)noexcept;
+		friend constexpr bool isTrue(tribool)noexcept;
+		friend constexpr bool isFalse(tribool)noexcept;
+		friend constexpr bool isMeaningless(tribool)noexcept;
 	};
 
 	//not
