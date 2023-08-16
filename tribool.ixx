@@ -6,6 +6,8 @@ export module tribool;
 
 export namespace kuma
 {
+	using namespace std;
+
 	//U = Unknown
 	//T = True
 	//F = False
@@ -13,7 +15,7 @@ export namespace kuma
 	class tribool
 	{
 	public:
-		enum class value_t : std::uint8_t
+		enum class value_t : uint8_t
 		{
 			Unknown = 0b00,
 			True = 0b01,
@@ -65,8 +67,8 @@ export namespace kuma
 	//!M == M
 	constexpr tribool operator!(tribool t)noexcept
 	{
-		const std::uint8_t b = static_cast<std::uint8_t>(t.value);
-		const std::uint8_t result = ((b << 1) | (b >> 1)) & 0b11;
+		const uint8_t b = static_cast<uint8_t>(t.value);
+		const uint8_t result = ((b << 1) | (b >> 1)) & 0b11;
 		return tribool(static_cast<tribool::value_t>(result));
 	}
 
@@ -80,10 +82,10 @@ export namespace kuma
 	//M && M == M
 	constexpr tribool operator&&(tribool tl, tribool tr)noexcept
 	{
-		constexpr std::uint32_t magic = 0b11111111'11101010'11100100'11100000UL;
-		const std::uint8_t bl = static_cast<std::uint8_t>(tl.value);
-		const std::uint8_t br = static_cast<std::uint8_t>(tr.value);
-		const std::uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
+		constexpr uint32_t magic = 0b11111111'11101010'11100100'11100000UL;
+		const uint8_t bl = static_cast<uint8_t>(tl.value);
+		const uint8_t br = static_cast<uint8_t>(tr.value);
+		const uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
 		return tribool(static_cast<tribool::value_t>(result));
 	}
 
@@ -97,10 +99,10 @@ export namespace kuma
 	//M || M == M
 	constexpr tribool operator||(tribool tl, tribool tr)noexcept
 	{
-		constexpr std::uint32_t magic = 0b11111111'11100100'11010101'11000100UL;
-		const std::uint8_t bl = static_cast<std::uint8_t>(tl.value);
-		const std::uint8_t br = static_cast<std::uint8_t>(tr.value);
-		const std::uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
+		constexpr uint32_t magic = 0b11111111'11100100'11010101'11000100UL;
+		const uint8_t bl = static_cast<uint8_t>(tl.value);
+		const uint8_t br = static_cast<uint8_t>(tr.value);
+		const uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
 		return tribool(static_cast<tribool::value_t>(result));
 	}
 
@@ -114,10 +116,10 @@ export namespace kuma
 	//M != M == M
 	constexpr tribool operator!=(tribool tl, tribool tr)noexcept
 	{
-		constexpr std::uint32_t magic = 0b11111111'11100100'11011000'11000000UL;
-		const std::uint8_t bl = static_cast<std::uint8_t>(tl.value);
-		const std::uint8_t br = static_cast<std::uint8_t>(tr.value);
-		const std::uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
+		constexpr uint32_t magic = 0b11111111'11100100'11011000'11000000UL;
+		const uint8_t bl = static_cast<uint8_t>(tl.value);
+		const uint8_t br = static_cast<uint8_t>(tr.value);
+		const uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
 		return tribool(static_cast<tribool::value_t>(result));
 	}
 
@@ -131,10 +133,10 @@ export namespace kuma
 	//M == M == M
 	constexpr tribool operator==(tribool tl, tribool tr)noexcept
 	{
-		constexpr std::uint32_t magic = 0b11111111'11011000'11100100'11000000UL;
-		const std::uint8_t bl = static_cast<std::uint8_t>(tl.value);
-		const std::uint8_t br = static_cast<std::uint8_t>(tr.value);
-		const std::uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
+		constexpr uint32_t magic = 0b11111111'11011000'11100100'11000000UL;
+		const uint8_t bl = static_cast<uint8_t>(tl.value);
+		const uint8_t br = static_cast<uint8_t>(tr.value);
+		const uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
 		return tribool(static_cast<tribool::value_t>(result));
 	}
 
