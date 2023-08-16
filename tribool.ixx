@@ -4,107 +4,157 @@
 
 export module tribool;
 
-export namespace tribool
+export namespace kuma
 {
+	//U = Unknown
+	//T = True
+	//F = False
+	//M = Meaningless
 	class tribool
 	{
 	public:
-		enum tribool_t
+		enum class value_t : std::uint8_t
 		{
-			indetermine_value,
-			true_value,
-			false_value,
-			meaningless_value
+			Unknown = 0b00,
+			True = 0b01,
+			False = 0b10,
+			Meaningless = 0b11
 		};
 
 	private:
-		tribool_t x;
+		value_t value;
 
 	public:
 		constexpr tribool()noexcept :
-			x(indetermine_value)
+			value(value_t::Unknown)
+		{}
+		constexpr tribool(value_t x)noexcept
 		{
+			switch(x)
+			{
+			case value_t::Unknown:
+			case value_t::True:
+			case value_t::False:
+			case value_t::Meaningless:
+				this->value = x;
+				return;
 
-		}
-		constexpr tribool(tribool_t x)noexcept :
-			x(x)
-		{
-
+			default:
+				this->value = value_t::Meaningless;
+				return;
+			}
 		}
 		constexpr explicit tribool(bool boolean)noexcept :
-			x(boolean ? true_value : false_value)
-		{
-
-		}
+			value(boolean ? value_t::True : value_t::False)
+		{}
 
 	private:
-		friend constexpr tribool operator!(tribool x)noexcept;
-		friend constexpr tribool operator&&(tribool l, tribool r)noexcept;
-		friend constexpr tribool operator||(tribool l, tribool r)noexcept;
-		friend constexpr tribool operator==(tribool l, tribool r)noexcept;
-		friend constexpr tribool operator!=(tribool l, tribool r)noexcept;
-		friend constexpr bool isIndetermine(tribool x)noexcept;
-		friend constexpr bool isTrue(tribool x)noexcept;
-		friend constexpr bool isFalse(tribool x)noexcept;
-		friend constexpr bool isMeaningless(tribool x)noexcept;
+		friend constexpr tribool operator!(tribool t)noexcept;
+		friend constexpr tribool operator&&(tribool tl, tribool tr)noexcept;
+		friend constexpr tribool operator||(tribool tl, tribool tr)noexcept;
+		friend constexpr tribool operator==(tribool tl, tribool tr)noexcept;
+		friend constexpr tribool operator!=(tribool tl, tribool tr)noexcept;
+		friend constexpr bool isUnknown(tribool t)noexcept;
+		friend constexpr bool isTrue(tribool t)noexcept;
+		friend constexpr bool isFalse(tribool t)noexcept;
+		friend constexpr bool isMeaningless(tribool t)noexcept;
 	};
 
 	//not
-	constexpr tribool operator!(tribool x)noexcept
+	//!U == U
+	//!M == M
+	constexpr tribool operator!(tribool t)noexcept
 	{
-		return tribool(static_cast<tribool::tribool_t>(((x.x << 1) | (x.x >> 1)) & 0b11));
-		//constexpr bitarr8_t magic = 0b11011000;
-		//return tribool((magic << (x.x * 2)) & 0b11);
+		const std::uint8_t b = static_cast<std::uint8_t>(t.value);
+		const std::uint8_t result = ((b << 1) | (b >> 1)) & 0b11;
+		return tribool(static_cast<tribool::value_t>(result));
 	}
 
 	//and
-	constexpr tribool operator&&(tribool l, tribool r)noexcept
+	//U && U == U
+	//U && T == U
+	//U && F == F
+	//U && M == M
+	//M && T == M
+	//M && F == M
+	//M && M == M
+	constexpr tribool operator&&(tribool tl, tribool tr)noexcept
 	{
-		//return tribool((l.x | r.x) & tribool::false_value | (l.x >> 1) & l.x | (r.x >> 1) & r.x | l.x & r.x & tribool::true_value);
 		constexpr std::uint32_t magic = 0b11111111'11101010'11100100'11100000UL;
-		return tribool(static_cast<tribool::tribool_t>((magic >> (((l.x << 2) | r.x) * 2)) & 0b11UL));
+		const std::uint8_t bl = static_cast<std::uint8_t>(tl.value);
+		const std::uint8_t br = static_cast<std::uint8_t>(tr.value);
+		const std::uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
+		return tribool(static_cast<tribool::value_t>(result));
 	}
 
 	//or
-	constexpr tribool operator||(tribool l, tribool r)noexcept
+	//U || U == U
+	//U || T == T
+	//U || F == U
+	//U || M == M
+	//M || T == M
+	//M || F == M
+	//M || M == M
+	constexpr tribool operator||(tribool tl, tribool tr)noexcept
 	{
-		//return tribool(l.x & (l.x << 1) | r.x & (r.x << 1) | l.x & r.x & tribool::false_value | (l.x | r.x) & tribool::true_value);
 		constexpr std::uint32_t magic = 0b11111111'11100100'11010101'11000100UL;
-		return tribool(static_cast<tribool::tribool_t>((magic >> (((l.x << 2) | r.x) * 2)) & 0b11UL));
+		const std::uint8_t bl = static_cast<std::uint8_t>(tl.value);
+		const std::uint8_t br = static_cast<std::uint8_t>(tr.value);
+		const std::uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
+		return tribool(static_cast<tribool::value_t>(result));
 	}
 
 	//xor, xnand
-	constexpr tribool operator!=(tribool l, tribool r)noexcept
+	//U != U == U
+	//U != T == U
+	//U != F == U
+	//U != M == M
+	//M != T == M
+	//M != F == M
+	//M != M == M
+	constexpr tribool operator!=(tribool tl, tribool tr)noexcept
 	{
 		constexpr std::uint32_t magic = 0b11111111'11100100'11011000'11000000UL;
-		return tribool(static_cast<tribool::tribool_t>((magic >> (((l.x << 2) | r.x) * 2)) & 0b11UL));
+		const std::uint8_t bl = static_cast<std::uint8_t>(tl.value);
+		const std::uint8_t br = static_cast<std::uint8_t>(tr.value);
+		const std::uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
+		return tribool(static_cast<tribool::value_t>(result));
 	}
 
 	//xand, xnor
-	constexpr tribool operator==(tribool l, tribool r)noexcept
+	//U == U == U
+	//U == T == U
+	//U == F == U
+	//U == M == M
+	//M == T == M
+	//M == F == M
+	//M == M == M
+	constexpr tribool operator==(tribool tl, tribool tr)noexcept
 	{
-		//return tribool((l.x | r.x) & tribool::false_value & (((l.x | r.x) & tribool::true_value) << 1) | (((l.x & r.x) >> 1) | r.x & tribool::true_value) & (l.x & r.x | ((r.x & tribool::false_value) >> 1)));
 		constexpr std::uint32_t magic = 0b11111111'11011000'11100100'11000000UL;
-		return tribool(static_cast<tribool::tribool_t>((magic >> (((l.x << 2) | r.x) * 2)) & 0b11UL));
+		const std::uint8_t bl = static_cast<std::uint8_t>(tl.value);
+		const std::uint8_t br = static_cast<std::uint8_t>(tr.value);
+		const std::uint8_t result = (magic >> (((bl << 2) | br) * 2)) & 0b11;
+		return tribool(static_cast<tribool::value_t>(result));
 	}
 
-	constexpr bool isIndetermine(tribool x)noexcept
+	constexpr bool isUnknown(tribool t)noexcept
 	{
-		return x.x == tribool::indetermine_value;
+		return t.value == tribool::value_t::Unknown;
 	}
 
-	constexpr bool isTrue(tribool x)noexcept
+	constexpr bool isTrue(tribool t)noexcept
 	{
-		return x.x == tribool::true_value;
+		return t.value == tribool::value_t::True;
 	}
 
-	constexpr bool isFalse(tribool x)noexcept
+	constexpr bool isFalse(tribool t)noexcept
 	{
-		return x.x == tribool::false_value;
+		return t.value == tribool::value_t::False;
 	}
 
-	constexpr bool isMeaningless(tribool x)noexcept
+	constexpr bool isMeaningless(tribool t)noexcept
 	{
-		return x.x == tribool::meaningless_value;
+		return t.value == tribool::value_t::Meaningless;
 	}
 }
