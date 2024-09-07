@@ -1,5 +1,5 @@
-﻿#ifndef KUMATARO_TRIBOOL_H
-#define KUMATARO_TRIBOOL_H
+﻿#ifndef KUMATARO_INCLUDE_TRIBOOL_H
+#define KUMATARO_INCLUDE_TRIBOOL_H
 
 #include <cstdint>
 
