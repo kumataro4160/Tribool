@@ -1,10 +1,10 @@
-﻿module;
+﻿#ifndef KUMATARO_TRIBOOL_H
+#define KUMATARO_TRIBOOL_H
 
 #include <cstdint>
 
-export module tribool;
 
-export namespace kuma
+namespace kuma
 {
 	using namespace std;
 
@@ -160,3 +160,6 @@ export namespace kuma
 		return t.value == tribool::value_t::Meaningless;
 	}
 }
+
+
+#endif
